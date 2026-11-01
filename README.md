@@ -34,7 +34,9 @@ AI-Interview-Trainer/
 │   ├── content_grader.py   # Evaluates the content of the candidate response
 │   ├── orchestrator.py     # Decides whether to continue or stop the interview
 │   └── ...
-└── README.md
+├── LICENSE
+├── README.md
+└── .gitignore
 ```
 
 ## How It Works
@@ -99,4 +101,4 @@ Then open the local Gradio URL shown in the terminal.
 
 ## License
 
-This project does not currently include a license file. If you plan to publish or distribute it publicly, consider adding an open-source license such as MIT or Apache 2.0.
+This project is licensed under the [MIT License](LICENSE).
