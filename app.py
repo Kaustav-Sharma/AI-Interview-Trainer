@@ -51,4 +51,4 @@ with gr.Blocks() as demo:
     submit_btn.click(fn=process_turn, inputs=[audio_in, state, groq_key, assembly_key], outputs=[chatbot, state, audio_out, status_text, audio_in, metrics_display])
 
 if __name__ == "__main__":
-    demo.launch(share=True, debug=True)
+    demo.launch(server_name="0.0.0.0", server_port=10000)
