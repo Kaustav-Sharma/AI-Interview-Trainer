@@ -1,6 +1,6 @@
 # AI Interview Trainer
 
-An AI-powered mock interview application that helps job candidates practice for technical and behavioral interviews. The app generates interview questions for a target role and experience level, records spoken answers, and provides actionable feedback to improve interview performance.
+An AI-powered mock interview application that helps job candidates practice for technical and behavioral interviews. The app generates interview questions for a target role and experience level, evaluates spoken answers, and delivers a final performance summary.
 
 ## Live Demo
 
@@ -37,11 +37,77 @@ AI-Interview-Trainer/
 ├── models/
 │   ├── content_grader.py   # Evaluates the content of the candidate response
 │   ├── orchestrator.py     # Decides whether to continue or stop the interview
-│   └── ...
+│   ├── question_generator.py # Creates next interview questions
+│   └── voice_grader.py     # Analyzes speaking speed, fillers, and tone
+├── requirements.txt        # Python dependencies
 ├── LICENSE
 ├── README.md
 └── .gitignore
 ```
+
+## System Architecture
+
+The application follows a modular, event-driven interview pipeline. The browser UI is built with Gradio, while each interview turn is managed by a central state object and orchestrated through the `graph.py` workflow.
+
+```mermaid
+flowchart TD
+    U[User / Candidate] --> UI[Gradio Frontend in app.py]
+    UI --> S[InterviewState]
+    UI --> QG[Question Generator\nmodels/question_generator.py]
+    UI --> AT[Audio Handler\naudio_handler.py]
+
+    QG -->|Generate first or follow-up question| UI
+    UI -->|Speak question| AT
+    AT -->|TTS via Edge TTS| VO[Interviewer Voice Output]
+
+    U -->|Answer via microphone| ANS[Recorded Audio]
+    ANS --> AT
+    AT -->|Transcribe with Groq Whisper| TR[Transcript]
+
+    TR --> CG[Content Grader\nmodels/content_grader.py]
+    ANS --> VG[Voice Grader\nmodels/voice_grader.py]
+    CG --> OR[Orchestrator\nmodels/orchestrator.py]
+    VG --> OR
+
+    OR -->|Continue| QG
+    OR -->|Stop| J[Final Judgment + Report]
+
+    QG --> S
+    CG --> S
+    VG --> S
+    OR --> S
+
+    S -->|Performance summary| UI
+
+    subgraph ExternalAPIs[External AI Services]
+        G[Groq API\nLLMs + Whisper]
+        A[AssemblyAI API\nVoice analysis]
+    end
+
+    QG --> G
+    CG --> G
+    OR --> G
+    AT --> G
+    VG --> A
+```
+
+### Architecture Overview
+
+1. `app.py` manages the user interface and triggers each turn of the interview.
+2. `state.py` holds the current interview state, including chat history, metrics, and routing information.
+3. `graph.py` coordinates the full turn lifecycle:
+   - capture candidate audio
+   - transcribe the answer
+   - run content and voice grading in parallel
+   - decide whether to continue or end the interview
+   - generate the next question when needed
+4. `audio_handler.py` handles both speech-to-text and text-to-speech.
+5. The `models/` package contains the specialized intelligence layer:
+   - `question_generator.py` creates follow-up questions
+   - `content_grader.py` scores technical and communication quality
+   - `voice_grader.py` measures delivery metrics like speaking rate, fillers, and sentiment
+   - `orchestrator.py` decides when the interview should stop and summarizes the outcome
+6. Groq and AssemblyAI provide the external AI services used for transcription, grading, and voice analysis.
 
 ## How It Works
 
@@ -69,7 +135,7 @@ AI-Interview-Trainer/
 ### Install dependencies
 
 ```bash
-pip install gradio groq edge-tts assemblyai
+pip install -r requirements.txt
 ```
 
 ### Run the app
@@ -92,7 +158,7 @@ Then open the local Gradio URL shown in the terminal.
 ## Notes
 
 - The app currently prompts for API keys directly in the interface rather than reading them from environment variables.
-- The repository does not currently include a `requirements.txt` file, so dependencies should be installed using the command above.
+- Dependencies are managed through `requirements.txt` for easier setup.
 - The application is intended for learning and interview practice, not as a production-grade hiring system.
 
 ## Future Improvements
