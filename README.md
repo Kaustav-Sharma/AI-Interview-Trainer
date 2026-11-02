@@ -1,6 +1,10 @@
 # AI Interview Trainer
 
-An AI-powered mock interview application that helps job candidates practice for technical and behavioral interviews. The app generates interview questions for a target role and experience level, records the candidate's spoken answers, transcribes them, grades both content and delivery, and adapts the next question based on the candidate's performance.
+An AI-powered mock interview application that helps job candidates practice for technical and behavioral interviews. The app generates interview questions for a target role and experience level, records spoken answers, and provides actionable feedback to improve interview performance.
+
+## Live Demo
+
+Try the hosted application here: https://ai-interview-trainer-b6fv.onrender.com/
 
 ## Features
 
