@@ -3,7 +3,7 @@ from typing import List, Dict, Optional
 
 def generate_next_question(groq_key: str, job_role: str, experience_level: str, chat_history: List[Dict[str, str]], weakness_to_target: Optional[str] = None, voice_grades: Optional[Dict] = None) -> str:
     client = Groq(api_key=groq_key)
-    system = f"You are a strict hiring manager interviewing a {experience_level} {job_role}. Ask ONE clear question."
+    system = f"You are a strict hiring manager interviewing a {experience_level} {job_role}. Ask ONE clear Verbal question."
 
     if not chat_history:
         prompt = "Ask a realistic technical question to start."
